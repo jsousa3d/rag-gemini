@@ -1,11 +1,13 @@
-import { client } from './auth';
+import initializeClient from './googleClient';
 
-export const queryCorpus = async (
+const queryCorpus = async (
   corpusName: string,
   query: string,
   tags: string[],
   resultsCount: number = 5
 ) => {
+  const client = await initializeClient();
+
   const request = {
     name: corpusName,
     query,
@@ -25,3 +27,5 @@ export const queryCorpus = async (
   console.log('Query response:', response);
   return response;
 };
+
+export default queryCorpus;

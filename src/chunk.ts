@@ -1,29 +1,10 @@
 import axios from 'axios';
 import { parse } from 'node-html-parser';
-import { Document, Chunk } from '@google-cloud/aiplatform/build/src/v1/document';
-import initializeClient from './client';
+import { aiplatform } from '@google-cloud/aiplatform';
+import initializeClient from './googleClient';
+import createDocument from './document';
 
-const createDocument = async (
-  projectId: string,
-  location: string,
-  documentName: string,
-  documentUrl: string
-): Promise<any> => {
-  const client = await initializeClient();
-
-  const document = new Document({
-    displayName: documentName,
-    customMetadata: { url: documentUrl }
-  });
-
-  const request = {
-    parent: `projects/${projectId}/locations/${location}`,
-    document
-  };
-
-  const [response] = await client.createDocument(request);
-  return response;
-};
+const { Chunk } = aiplatform.protos.google.cloud.aiplatform.v1;
 
 const chunkDocument = async (
   projectId: string,
@@ -66,5 +47,4 @@ const chunkDocument = async (
 
   return chunks;
 };
-
-export { createDocument, chunkDocument };
+export default chunkDocument;

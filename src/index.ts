@@ -1,8 +1,8 @@
-import { createCorpus } from './corpus';
-import { createDocument } from './document';
-import { chunkDocument } from './chunk';
-import { queryCorpus } from './query';
-import { generateAnswer } from './generateAnswer';
+import createCorpus  from './corpus';
+import chunkDocument  from './chunk';
+import createDocument from './document';
+import queryCorpus from './query';
+import generateAnswer from './generateAnswer';
 
 const main = async () => {
   try {
@@ -14,11 +14,17 @@ const main = async () => {
 
     const corpusName = await createCorpus(projectId, corpusDisplayName);
     const documentName = await createDocument(
+      projectId,
       corpusName,
       documentDisplayName,
       documentUrl
     );
-    await chunkDocument(documentName, documentUrl);
+    await chunkDocument(
+      projectId,
+      corpusName,
+      documentDisplayName,
+      documentUrl
+    );
     const queryResponse = await queryCorpus(corpusName, question, ['Tag1']);
     const aqaResponse = await generateAnswer(corpusName, question);
 

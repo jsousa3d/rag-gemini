@@ -1,27 +1,43 @@
-import client from './auth';
+import Bottleneck from 'bottleneck';
+import initializeClient from './googleClient';
 
-export const queryCorpus = async (
+const limiter = new Bottleneck({
+  minTime: 200,
+  maxConcurrent: 1
+});
+
+const generateAnswer = async (
   corpusName: string,
-  query: string,
-  tags: string[],
-  resultsCount: number = 5
+  question: string,
+  answerStyle: string = 'ABSTRACTIVE'
 ) => {
+  const client = await initializeClient();
+
   const request = {
-    name: corpusName,
-    query,
-    resultsCount,
-    metadataFilters: [
-      {
-        key: 'chunk.custom_metadata.tags',
-        conditions: tags.map((tag) => ({
-          stringValue: tag,
-          operation: 'INCLUDES'
-        }))
-      }
-    ]
+    model: 'models/aqa',
+    contents: [{ parts: [{ text: question }] }],
+    semanticRetriever: {
+      source: corpusName,
+      query: { parts: [{ text: question }] }
+    },
+    answerStyle
   };
 
-  const [response] = await client.queryCorpus(request);
-  console.log('Query response:', response);
-  return response;
+  const attemptGenerateAnswer = async (retries = 3): Promise<any> => {
+    try {
+      const [response] = await client.generateAnswer(request);
+      return response;
+    } catch (error) {
+      if (retries > 0) {
+        await new Promise((res) => setTimeout(res, (4 - retries) * 1000));
+        return attemptGenerateAnswer(retries - 1);
+      } else {
+        throw error;
+      }
+    }
+  };
+
+  return limiter.schedule(() => attemptGenerateAnswer());
 };
+
+export default generateAnswer;
