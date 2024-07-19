@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { parse } from 'node-html-parser';
-import { aiplatform } from '@google-cloud/aiplatform';
+import { Document, Chunk } from '@google-cloud/aiplatform/build/src/v1/document';
 import initializeClient from './client';
-
-const { Document, Chunk } = aiplatform.protos.google.cloud.aiplatform.v1;
 
 const createDocument = async (
   projectId: string,
