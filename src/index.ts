@@ -1,5 +1,5 @@
-import createCorpus  from './corpus';
-import chunkDocument  from './chunk';
+import createCorpus from './corpus';
+import chunkDocument from './chunk';
 import createDocument from './document';
 import queryCorpus from './query';
 import generateAnswer from './generateAnswer';

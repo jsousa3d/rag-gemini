@@ -1,10 +1,8 @@
 import axios from 'axios';
 import { parse } from 'node-html-parser';
-import { aiplatform } from '@google-cloud/aiplatform';
-import initializeClient from './googleClient';
+import { EndpointServiceClient } from '@google-cloud/aiplatform';
+import GoogleClient from './googleClient';
 import createDocument from './document';
-
-const { Chunk } = aiplatform.protos.google.cloud.aiplatform.v1;
 
 const chunkDocument = async (
   projectId: string,
@@ -26,13 +24,13 @@ const chunkDocument = async (
   const chunks: any[] = [];
   const chunkSize = 2000;
   for (let i = 0; i < text.length; i += chunkSize) {
-    const chunk = new Chunk({
+    const chunk = {
       data: { stringValue: text.slice(i, i + chunkSize) },
       customMetadata: {
         tags: ['Tag1', 'Tag2'],
         chunkingStrategy: 'greedily_aggregate_sibling_nodes'
       }
-    });
+    };
 
     const createChunkRequest = {
       parent: document.name,
@@ -42,8 +40,8 @@ const chunkDocument = async (
     chunks.push(createChunkRequest);
   }
 
-  const client = await initializeClient();
-  await client.batchCreateChunks({ parent: document.name, requests: chunks });
+  const client: EndpointServiceClient = await GoogleClient.getInstance();
+  await client..batchCreateChunks({ parent: document.name, requests: chunks });
 
   return chunks;
 };

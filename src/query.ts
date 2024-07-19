@@ -1,4 +1,5 @@
-import initializeClient from './googleClient';
+import { EndpointServiceClient } from '@google-cloud/aiplatform';
+import GoogleClient from './googleClient';
 
 const queryCorpus = async (
   corpusName: string,
@@ -6,7 +7,7 @@ const queryCorpus = async (
   tags: string[],
   resultsCount: number = 5
 ) => {
-  const client = await initializeClient();
+  const client: EndpointServiceClient = await GoogleClient.getInstance();
 
   const request = {
     name: corpusName,

@@ -1,7 +1,5 @@
-
-import initializeClient from './googleClient';
-
-const { Document } = aiplatform.protos.google.cloud.aiplatform.v1;
+import { EndpointServiceClient } from '@google-cloud/aiplatform';
+import GoogleClient from './googleClient';
 
 const createDocument = async (
   projectId: string,
@@ -9,12 +7,12 @@ const createDocument = async (
   documentName: string,
   documentUrl: string
 ): Promise<any> => {
-  const client = await initializeClient();
+  const client: EndpointServiceClient = await GoogleClient.getInstance();
 
-  const document = new Document({
+  const document = {
     displayName: documentName,
     customMetadata: { url: documentUrl }
-  });
+  };
 
   const request = {
     parent: `projects/${projectId}/locations/${location}`,

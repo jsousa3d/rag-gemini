@@ -1,16 +1,21 @@
-import { aiplatform } from '@google-cloud/aiplatform';
-import { getAuthClient } from './auth';
+import { EndpointServiceClient } from '@google-cloud/aiplatform';
+import { GoogleAuth } from 'google-auth-library';
 
-const { EndpointServiceClient } = aiplatform.v1;
+class GoogleClient {
+  private static instance: EndpointServiceClient | null = null;
 
-let clientInstance: EndpointServiceClient | null = null;
+  private constructor() {}
 
-const initializeClient = async (): Promise<EndpointServiceClient> => {
-  if (!clientInstance) {
-    const authClient = await getAuthClient();
-    clientInstance = new EndpointServiceClient({ authClient });
+  public static async getInstance(): Promise<EndpointServiceClient> {
+    if (!GoogleClient.instance) {
+      const auth = new GoogleAuth({
+        scopes: ['https://www.googleapis.com/auth/cloud-platform']
+      });
+      const authClient = await auth.getClient();
+      GoogleClient.instance = new EndpointServiceClient({ authClient });
+    }
+    return GoogleClient.instance;
   }
-  return clientInstance;
-};
+}
 
-export default initializeClient;
+export default GoogleClient;

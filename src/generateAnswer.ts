@@ -1,5 +1,6 @@
 import Bottleneck from 'bottleneck';
-import initializeClient from './googleClient';
+import { EndpointServiceClient } from '@google-cloud/aiplatform';
+import GoogleClient from './googleClient';
 
 const limiter = new Bottleneck({
   minTime: 200,
@@ -11,7 +12,7 @@ const generateAnswer = async (
   question: string,
   answerStyle: string = 'ABSTRACTIVE'
 ) => {
-  const client = await initializeClient();
+  const client: EndpointServiceClient = await GoogleClient.getInstance();
 
   const request = {
     model: 'models/aqa',
